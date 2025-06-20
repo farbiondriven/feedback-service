@@ -1,0 +1,18 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug API",
+      "type": "node",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/apps/api",
+      "runtimeArgs": ["-r", "ts-node/register"],
+      "args": ["src/server.ts"],
+      "env": {
+        "DATABASE_URL": "postgres://api:api@localhost:5432/api",
+        "ADMIN_TOKEN": "super-secret-value"
+      },
+      "console": "integratedTerminal"
+    }
+  ]
+}

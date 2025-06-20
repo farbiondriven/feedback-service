@@ -1,0 +1,26 @@
+{
+  "name": "feedback-service",
+  "version": "0.2.1",
+  "private": true,
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "npm --workspace ./apps/api run dev",
+    "build": "npm run --workspaces build",
+    "lint": "npm run --workspaces lint"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "@typescript-eslint/eslint-plugin": "^8.34.1",
+    "@typescript-eslint/parser": "^8.34.1",
+    "eslint": "^9.29.0",
+    "prisma": "^6.10.1",
+    "tsx": "^4.7.0",
+    "typescript": "^5.5.0",
+    "typescript-eslint": "^8.34.1"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.10.1"
+  }
+}
