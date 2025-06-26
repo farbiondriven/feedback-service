@@ -2,7 +2,6 @@
 //--------------------------------------------------
 import { parentPort, workerData } from 'worker_threads';
 import winkNLP from 'wink-nlp';
-import its from 'wink-nlp/src/its';                    // ← pull in the helper
 import model from 'wink-eng-lite-web-model';
 import { PrismaClient, Sentiment } from '@prisma/client';
 
@@ -12,27 +11,23 @@ interface JobData {
 }
 
 const prisma = new PrismaClient();
-const nlp    = winkNLP(model);
+const nlp = winkNLP(model);
 
 (async () => {
   try {
     const { id, content } = workerData as JobData;
-
+    console.info(`Worker thread ${id} - ${content}`);
     // build a document and get its sentiment score
-    const doc   = nlp.readDoc(content);
-    const score = doc.out(its.sentiment) as number;
+    const doc = nlp.readDoc(content);
+    const score = doc.out(nlp.its.sentiment) as number;
 
     // map to the Prisma enum
-    const bucket = score > 0
-      ? Sentiment.GOOD
-      : score < 0
-        ? Sentiment.BAD
-        : Sentiment.NEUTRAL;
+    const bucket = score > 0 ? Sentiment.GOOD : score < 0 ? Sentiment.BAD : Sentiment.NEUTRAL;
 
     // update the record
     await prisma.text.update({
       where: { id },
-      data: { sentiment: bucket }
+      data: { sentiment: bucket },
     });
 
     parentPort?.postMessage({ success: true });
@@ -40,7 +35,7 @@ const nlp    = winkNLP(model);
     console.error('[sentiment-worker] Error processing job:', err);
     parentPort?.postMessage({
       success: false,
-      error: (err as Error).message
+      error: (err as Error).message,
     });
   } finally {
     await prisma.$disconnect();

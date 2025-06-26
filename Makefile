@@ -6,7 +6,7 @@ API_DIR     := apps/api
 WORKER_DIR  := apps/worker
 PRISMA      := npx prisma
 
-.PHONY: install build dev dev-api dev-worker lint clean \
+.PHONY: install build dev dev-api dev-worker lint lint-fix format clean \
         db-generate db-migrate db-migrate-deploy docker-build docker-up docker-down
 
 ## 📦  Install all workspaces and generate Prisma client
@@ -35,6 +35,16 @@ dev-worker: install
 ## 🔍  Lint every workspace
 lint: install
 	npm run --workspaces lint
+
+## 🛠  Lint & auto-fix with ESLint + Prettier
+lint-fix:
+	@echo "🛠  Running ESLint+Prettier in fix mode…"
+	npm run lint:fix
+
+## 🧹  Format code with Prettier
+format:
+	@echo "🧹  Formatting code with Prettier…"
+	npm run format
 
 ## 🗑   Remove node_modules & build artefacts
 clean:

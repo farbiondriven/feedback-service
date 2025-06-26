@@ -4,34 +4,35 @@ import Fastify from 'fastify';
 import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox';
 import fastifySwagger from '@fastify/swagger';
 import fastifySwaggerUI from '@fastify/swagger-ui';
-import authPlugin from './auth';
 import feedbackRoutes from './routes/feedback';
 
-const app = Fastify({ logger: true })
-  .withTypeProvider<TypeBoxTypeProvider>();
+export async function buildApp() {
+  const app = Fastify({ logger: true }).withTypeProvider<TypeBoxTypeProvider>();
 
-app.register(fastifySwagger, {
-  openapi: {
-    info: { title: 'Feedback API', version: '0.2.0' },
-    components: {
-      securitySchemes: {
-        bearerAuth: { type: 'http', scheme: 'bearer' }
-      }
+  await app.register(fastifySwagger, {
+    openapi: {
+      info: { title: 'Feedback API', version: '0.2.0' },
+      components: {
+        securitySchemes: {
+          bearerAuth: { type: 'http', scheme: 'bearer' },
+        },
+      },
+      security: [{ bearerAuth: [] }],
     },
-    security: [{ bearerAuth: [] }]
-  }
-});
-app.register(fastifySwaggerUI, { routePrefix: '/docs' });
+  });
+  await app.register(fastifySwaggerUI, { routePrefix: '/docs' });
 
-/*--- plugins & routes ---*/
-app.register(authPlugin);
-app.register(feedbackRoutes);
+  /*--- plugins & routes ---*/
+  await app.register(feedbackRoutes);
+  return app;
+}
 
-/*--- start ---*/
-app.listen({ port: 3000 }, (err, address) => {
-  if (err) {
-    app.log.error(err);
+if (require.main === module) {
+  (async () => {
+    const app = await buildApp();
+    await app.listen({ port: +process.env.PORT! || 3000, host: '0.0.0.0' });
+  })().catch((err) => {
+    console.error(err);
     process.exit(1);
-  }
-  app.log.info(`API listening on ${address}`);
-});
+  });
+}

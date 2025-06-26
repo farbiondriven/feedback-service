@@ -2,17 +2,27 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Debug API",
-      "type": "node",
+      "name": "Debug Service (Hot Reload)",
+      "type": "pwa-node",
       "request": "launch",
-      "cwd": "${workspaceFolder}/apps/api",
-      "runtimeArgs": ["-r", "ts-node/register"],
-      "args": ["src/server.ts"],
+      "cwd": "${workspaceFolder}/apps/service",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": [
+        "tsx",
+        "watch",
+        "--inspect=9229",
+        "src/server.ts"
+      ],
       "env": {
-        "DATABASE_URL": "postgres://api:api@localhost:5432/api",
-        "ADMIN_TOKEN": "super-secret-value"
+        "DATABASE_URL": "postgres://api:api@localhost:5430/api",
+        "ADMIN_TOKEN": "fab",
+        "PORT": "3000"
       },
-      "console": "integratedTerminal"
+      "console": "integratedTerminal",
+      // this lets tsx restart and VS Code re-attach automatically
+      "autoAttachChildProcesses": true,
+      "internalConsoleOptions": "neverOpen",
+      "skipFiles": ["<node_internals>/**"]
     }
   ]
 }

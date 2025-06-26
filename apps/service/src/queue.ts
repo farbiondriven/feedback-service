@@ -4,29 +4,21 @@
  * Graphile‑Worker, etc.) is as easy as changing this one function.
  */
 import { Worker } from 'worker_threads';
-import { resolve } from 'path';
+import path from 'path';
 
 export interface SentimentJobData {
   id: number;
   content: string;
 }
 
-/**
- * Enqueue a sentiment‑analysis task.
- *
- * In dev we point straight at the TypeScript source via ts‑node/tsx; in
- * production we assume `tsc` transpiles to JS inside `dist/`.
- */
 export function enqueueSentiment(id: number, content: string): void {
-  const workerEntry =
-    process.env.NODE_ENV === 'production'
-      ? // compiled JS after `tsc --outDir dist`
-        resolve(__dirname, './workers/sentiment.js')
-      : // run TS directly with tsx/ts‑node
-        resolve(__dirname, './workers/sentiment.ts');
+  // __dirname at runtime === /app/dist
+  //const workerFile = path.join(__dirname, "worker.js");
+  const workerFile = path.join(__dirname, 'worker.ts');
 
-  // Fire‑and‑forget (no message channel back to the main thread).
-  new Worker(workerEntry, {
-    workerData: { id, content } satisfies SentimentJobData
+  const worker = new Worker(workerFile, {
+    workerData: { id, content },
   });
+
+  worker.once('error', (err) => console.error('[enqueueSentiment] worker crashed:', err));
 }
