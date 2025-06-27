@@ -1,0 +1,52 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: api
+      POSTGRES_PASSWORD: api
+      POSTGRES_DB: api
+    volumes:
+      - dbdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD","pg_isready","-U","api"]
+      interval: 5s
+      retries: 5
+    ports:
+      - "5430:5432"
+
+  migrate:
+    image: node:20-slim                     # use Debian-slim instead of Alpine
+    working_dir: /app
+    volumes:
+      - ./:/app
+    command:
+      [
+        "npx","prisma","migrate","deploy",
+        "--schema=./prisma/schema.prisma"
+      ]
+    environment:
+      DATABASE_URL: postgres://api:api@db:5432/api
+    depends_on:
+      db:
+        condition: service_healthy
+
+  app:
+    build:
+      context: .                       # ← repo root
+      dockerfile: apps/service/Dockerfile
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgres://api:api@db:5432/api
+      ADMIN_TOKEN: fab
+      PORT: "3000"
+    ports:
+      - "3001:3000"
+
+volumes:
+  dbdata:
