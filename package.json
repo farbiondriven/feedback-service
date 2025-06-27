@@ -1,8 +1,8 @@
 {
   "name": "feedback-service",
-  "version": "0.2.1",
+  "version": "0.1.0",
   "private": true,
-  "workspaces": ["apps/service"],
+  "workspaces": ["apps/service", "apps/frontend"],
   "scripts": {
     "dev": "npm --workspace ./apps/api run dev",
     "build": "npm run --workspaces build",
