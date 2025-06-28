@@ -21,7 +21,7 @@ export const FeedbackBodySchema = {
   type: 'object' as const,
   required: ['content'] as const,
   properties: {
-    content: { type: 'string' as const, minLength: 1, maxLength: 2000 },
+    content: { type: 'string' as const, minLength: 1, maxLength: 1000 },
   },
   additionalProperties: false as const,
 };

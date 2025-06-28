@@ -20,5 +20,7 @@ export function enqueueSentiment(id: number, content: string): void {
     workerData: { id, content },
   });
 
-  worker.once('error', (err) => console.error('[enqueueSentiment] worker crashed:', err));
+  worker.once('error', (err) =>
+    console.error('[enqueueSentiment] worker crashed:', err),
+  );
 }

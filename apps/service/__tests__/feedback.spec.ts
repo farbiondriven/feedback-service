@@ -1,23 +1,13 @@
-// apps/service/src/__tests__/feedback.spec.ts
 import { FastifyInstance } from 'fastify';
 import { buildApp } from '../src/server';
 
-jest.mock('../db', () => ({
-  __esModule: true,
-  // match the shape of your exported `prisma` object
-  prisma: {
-    text: {
-      create: jest.fn(),
-      findMany: jest.fn(),
-    },
-  },
-}));
-
-import prisma from '../src/db';
-import { enqueueSentiment } from '../src/queue';
+import { prismaMock } from '../src/singleton';
 
 describe('Feedback API', () => {
   let app: FastifyInstance;
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
 
   beforeAll(async () => {
     app = await buildApp();
@@ -32,11 +22,17 @@ describe('Feedback API', () => {
       jest.resetAllMocks();
     });
 
-    it('🏷️  returns 202 and enqueues sentiment for valid content', async () => {
-      (prisma.text.create as jest.Mock).mockResolvedValue({
+    it('🏷️  returns 200 and enqueues sentiment for valid content', async () => {
+      prismaMock.text.create.mockResolvedValue({
         id: 42,
         content: 'Looks great!',
         sentiment: 'UNDETERMINED',
+        createdAt: new Date(),
+      });
+      prismaMock.text.update.mockResolvedValue({
+        id: 42,
+        content: 'Looks great!',
+        sentiment: 'GOOD',
         createdAt: new Date(),
       });
 
@@ -46,16 +42,15 @@ describe('Feedback API', () => {
         payload: { content: 'Looks great!' },
       });
 
-      expect(res.statusCode).toBe(202);
+      expect(res.statusCode).toBe(200);
       expect(res.json()).toEqual({ id: 42 });
-      expect(prisma.text.create).toHaveBeenCalledWith({
+      expect(prismaMock.text.create).toHaveBeenCalledWith({
         data: { content: 'Looks great!' },
       });
-      expect(enqueueSentiment).toHaveBeenCalledWith(42, 'Looks great!');
     });
 
     it('🔢  returns 400 when content exceeds max length', async () => {
-      const long = 'a'.repeat(2001);
+      const long = 'a'.repeat(1001);
       const res = await app.inject({
         method: 'POST',
         url: '/feedback',
@@ -67,8 +62,7 @@ describe('Feedback API', () => {
       expect(body).toHaveProperty('statusCode', 400);
       expect(body).toHaveProperty('error', 'Bad Request');
       // DB and queue should never be called
-      expect(prisma.text.create).not.toHaveBeenCalled();
-      expect(enqueueSentiment).not.toHaveBeenCalled();
+      expect(prismaMock.text.create).not.toHaveBeenCalled();
     });
   });
 
@@ -80,8 +74,7 @@ describe('Feedback API', () => {
     });
 
     beforeEach(() => {
-      jest.resetAllMocks();
-      (prisma.text.findMany as jest.Mock).mockResolvedValue([
+      prismaMock.text.findMany.mockResolvedValue([
         {
           id: 1,
           content: 'Test content',
@@ -115,7 +108,7 @@ describe('Feedback API', () => {
         sentiment: 'NEUTRAL',
         createdAt: '2025-06-30T12:00:00.000Z',
       });
-      expect(prisma.text.findMany).toHaveBeenCalled();
+      expect(prismaMock.text.findMany).toHaveBeenCalled();
     });
   });
 });

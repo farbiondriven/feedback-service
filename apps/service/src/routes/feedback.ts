@@ -67,7 +67,10 @@ const feedbackRoutes: FastifyPluginAsync = async (app) => {
         },
       },
       preHandler: async (req, reply) => {
-        const token = (req.headers.authorization ?? '').replace(/^Bearer\s*/i, '');
+        const token = (req.headers.authorization ?? '').replace(
+          /^Bearer\s*/i,
+          '',
+        );
         if (token !== process.env.ADMIN_TOKEN) {
           app.log.info('Checking token');
           app.log.info(token);

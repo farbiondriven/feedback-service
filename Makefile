@@ -2,8 +2,7 @@
 #  Makefile – feedback-service
 #───────────────────────────────────────────────────────────────────────────────
 
-API_DIR     := apps/api
-WORKER_DIR  := apps/worker
+API_DIR     := apps/service
 PRISMA      := npx prisma
 
 .PHONY: install build dev dev-api dev-worker lint lint-fix format clean \

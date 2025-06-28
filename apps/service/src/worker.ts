@@ -22,7 +22,12 @@ const nlp = winkNLP(model);
     const score = doc.out(nlp.its.sentiment) as number;
 
     // map to the Prisma enum
-    const bucket = score > 0 ? Sentiment.GOOD : score < 0 ? Sentiment.BAD : Sentiment.NEUTRAL;
+    const bucket =
+      score > 0
+        ? Sentiment.GOOD
+        : score < 0
+          ? Sentiment.BAD
+          : Sentiment.NEUTRAL;
 
     // update the record
     await prisma.text.update({
