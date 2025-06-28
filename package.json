@@ -4,11 +4,12 @@
   "private": true,
   "workspaces": ["apps/service", "apps/frontend"],
   "scripts": {
-    "dev": "npm --workspace ./apps/api run dev",
-    "build": "npm run --workspaces build",
-    "lint":    "eslint .",
-    "lint:fix":"eslint . --fix",
-    "format":    "prettier --write \"apps/**/*.{ts,js,json,md}\""
+    "dev":            "npm --workspace ./apps/api run dev",
+    "build":          "npm run --workspaces build",
+    "lint":           "eslint .",
+    "lint:fix":       "eslint . --fix",
+    "format":         "prettier --write \"apps/**/*.{ts,js,tsx,css,json,md}\"",
+    "format:check":   "prettier --check \"apps/**/*.{ts,js,tsx,css,md,json}\""
   },
   "devDependencies": {
     "@types/node": "^20.11.0",

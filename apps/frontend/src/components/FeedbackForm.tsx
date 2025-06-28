@@ -33,14 +33,21 @@ export default function FeedbackForm() {
         maxLength={MAX_LEN}
         required
       />
-      <div style={{ fontSize: '0.9em', color: content.length > MAX_LEN ? 'red' : undefined }}>
+      <div
+        style={{
+          fontSize: '0.9em',
+          color: content.length > MAX_LEN ? 'red' : undefined,
+        }}
+      >
         {content.length} / {MAX_LEN}
       </div>
       <br />
-      <button type="submit" disabled={content.trim().length === 0}>
+      <button type='submit' disabled={content.trim().length === 0}>
         Send
       </button>
-      {id && <p style={{ color: 'green' }}>Thanks! Your feedback ID is {id}.</p>}
+      {id && (
+        <p style={{ color: 'green' }}>Thanks! Your feedback ID is {id}.</p>
+      )}
       {error && <p style={{ color: 'red' }}>Error: {error}</p>}
     </form>
   );

@@ -31,7 +31,10 @@ export default function App() {
           borderRadius: '4px',
         }}
       >
-        <button onClick={() => setView(View.Form)} disabled={view === View.Form}>
+        <button
+          onClick={() => setView(View.Form)}
+          disabled={view === View.Form}
+        >
           Feedback
         </button>
         <button
@@ -44,7 +47,7 @@ export default function App() {
         <button
           onClick={() => setDark((d) => !d)}
           style={{ marginLeft: '1rem' }}
-          title="Toggle Dark Mode"
+          title='Toggle Dark Mode'
         >
           {darkMode ? '🌞 Light' : '🌙 Dark'}
         </button>

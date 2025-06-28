@@ -8,7 +8,9 @@ export interface FeedbackRecord {
   createdAt: string;
 }
 
-export async function submitFeedback(content: string): Promise<FeedbackResponse> {
+export async function submitFeedback(
+  content: string,
+): Promise<FeedbackResponse> {
   const res = await fetch('/api/feedback', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },

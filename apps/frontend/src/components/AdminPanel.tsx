@@ -138,7 +138,13 @@ export default function AdminPanel() {
 
   return (
     <div>
-      <h2 style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <h2
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+        }}
+      >
         Admin Panel
         <button onClick={handleAuthorize} style={{ fontSize: '1.2em' }}>
           🔒 Authorize
@@ -166,7 +172,10 @@ export default function AdminPanel() {
                   <tr
                     key={r.id}
                     style={{
-                      backgroundColor: idx % 2 === 0 ? 'var(--stripe-even)' : 'var(--stripe-odd)',
+                      backgroundColor:
+                        idx % 2 === 0
+                          ? 'var(--stripe-even)'
+                          : 'var(--stripe-odd)',
                     }}
                   >
                     <td style={tdStyles}>{r.id}</td>
@@ -190,7 +199,9 @@ export default function AdminPanel() {
                           : r.content}
                     </td>
                     <td style={tdStyles}>{r.sentiment}</td>
-                    <td style={tdStyles}>{new Date(r.createdAt).toLocaleString()}</td>
+                    <td style={tdStyles}>
+                      {new Date(r.createdAt).toLocaleString()}
+                    </td>
                   </tr>
                 );
               })}
@@ -205,22 +216,26 @@ export default function AdminPanel() {
             <h3>Enter Admin Token</h3>
             <form onSubmit={handleSaveToken}>
               <input
-                type="password"
+                type='password'
                 value={draftToken}
                 onChange={(e) => setDraftToken(e.target.value)}
-                style={{ width: '100%', padding: '0.5rem', marginBottom: '0.5rem' }}
+                style={{
+                  width: '100%',
+                  padding: '0.5rem',
+                  marginBottom: '0.5rem',
+                }}
                 autoFocus
                 required
               />
               <div style={{ textAlign: 'right' }}>
                 <button
-                  type="button"
+                  type='button'
                   onClick={() => setShowAuthModal(false)}
                   style={{ marginRight: '0.5rem' }}
                 >
                   Cancel
                 </button>
-                <button type="submit">Save</button>
+                <button type='submit'>Save</button>
               </div>
             </form>
           </div>
