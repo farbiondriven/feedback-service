@@ -31,11 +31,10 @@ services:
     depends_on:
       db:
         condition: service_healthy
-
-  app:
+  backend:
     build:
-      context: .                       # ← repo root
-      dockerfile: apps/service/Dockerfile
+      context: ./apps/service
+      dockerfile: Dockerfile
     depends_on:
       migrate:
         condition: service_completed_successfully
@@ -47,6 +46,15 @@ services:
       PORT: "3000"
     ports:
       - "3001:3000"
+
+  frontend:
+    build:
+      context: ./apps/frontend
+      dockerfile: Dockerfile
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
 
 volumes:
   dbdata:

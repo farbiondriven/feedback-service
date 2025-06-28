@@ -4,4 +4,6 @@ module.exports = {
   roots: ['<rootDir>/src', '<rootDir>/__tests__'],
   moduleFileExtensions: ['ts', 'js'],
   transform: { '^.+\\.tsx?$': 'ts-jest' },
+  setupFilesAfterEnv: ['<rootDir>/src/singleton.ts'],
+  clearMocks: true,
 };

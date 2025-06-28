@@ -1,22 +1,18 @@
-# syntax=docker/dockerfile:1
-######################################
-# 1) BUILD stage
-######################################
 FROM node:20-slim AS build
 WORKDIR /app
 
 # 1.1 Copy service manifest & tsconfig
-COPY apps/service/package.json     apps/service/tsconfig.json ./
+COPY package.json     /tsconfig.json ./
 
 # 1.2 Install all deps (prod + dev)
 RUN npm install
 
 # 1.3 Generate Prisma client (schema lives at repo-root/prisma/)
-COPY prisma/schema.prisma ./prisma/schema.prisma
+COPY ./prisma/schema.prisma ./prisma/schema.prisma
 RUN npx prisma generate --schema=./prisma/schema.prisma
 
 # 1.4 Copy & build TypeScript
-COPY apps/service/src ./src
+COPY ./src ./src
 RUN npm run build
 
 # 1.5 Prune devDependencies for a lean runtime
