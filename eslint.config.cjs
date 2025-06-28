@@ -14,7 +14,7 @@ const compat = new FlatCompat({
 module.exports = [
   // 1) Ignore all JS files and build output
   {
-    ignores: ["**/*.js", "**/*.cjs", "dist/**", "apps/**/dist/**", 'apps/service/__tests__/**'],
+    ignores: ["**/*.js", "**/*.cjs", "dist/**", "apps/**/dist/**", 'apps/service/__tests__/**', "apps/frontend/vite.config.ts"],
   },
 
   // 2) Pull in the old "extends": presets
@@ -32,7 +32,7 @@ module.exports = [
     languageOptions: {
       parser: tsParser,
       parserOptions: {
-        project: "./apps/service/tsconfig.json", // adjust path if needed
+        project: ["./apps/service/tsconfig.json", './apps/frontend/tsconfig.json'],
         tsconfigRootDir: __dirname,
         ecmaVersion: 2022,
         sourceType: "module",

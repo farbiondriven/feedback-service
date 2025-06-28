@@ -4,16 +4,14 @@ export interface FeedbackResponse {
 export interface FeedbackRecord {
   id: number;
   content: string;
-  sentiment: "GOOD" | "NEUTRAL" | "BAD" | "UNDETERMINED";
+  sentiment: 'GOOD' | 'NEUTRAL' | 'BAD' | 'UNDETERMINED';
   createdAt: string;
 }
 
-export async function submitFeedback(
-  content: string,
-): Promise<FeedbackResponse> {
-  const res = await fetch("/api/feedback", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
+export async function submitFeedback(content: string): Promise<FeedbackResponse> {
+  const res = await fetch('/api/feedback', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ content }),
   });
   if (!res.ok) {
@@ -24,7 +22,7 @@ export async function submitFeedback(
 }
 
 export async function fetchFeedbacks(token: string): Promise<FeedbackRecord[]> {
-  const res = await fetch("/api/admin/feedback", {
+  const res = await fetch('/api/admin/feedback', {
     headers: { Authorization: `Bearer ${token}` },
   });
   if (!res.ok) {
