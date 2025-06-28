@@ -48,14 +48,6 @@ module.exports = [
     rules: {
       // disable the “no-explicit-any” rule entirely:
       '@typescript-eslint/no-explicit-any': 'off',
-      "prettier/prettier": [
-        "error",
-        {
-          singleQuote: true,
-          semi: true,
-          printWidth: 100,
-        },
-      ],
     },
   },
 ];
