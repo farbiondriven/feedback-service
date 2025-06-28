@@ -13,8 +13,8 @@ export interface SentimentJobData {
 
 export function enqueueSentiment(id: number, content: string): void {
   // __dirname at runtime === /app/dist
-  //const workerFile = path.join(__dirname, "worker.js");
-  const workerFile = path.join(__dirname, 'worker.ts');
+  const workerFile = path.join(__dirname, 'worker.js');
+  //const workerFile = path.join(__dirname, 'worker.ts');
 
   const worker = new Worker(workerFile, {
     workerData: { id, content },
