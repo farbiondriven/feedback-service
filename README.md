@@ -12,8 +12,6 @@ A small [PoC client](https://feedback-system-382890220864.europe-west1.run.app) 
 | **3. Persist** | Text, sentiment and timestamp saved via Prisma into Neon Postgres. |
 | **4. Admin view** | A password protected page for administrators showing every submission saved |
 
----
-
 ## Backend stack
 
 | Concern | Library | Rationale |
@@ -24,8 +22,6 @@ A small [PoC client](https://feedback-system-382890220864.europe-west1.run.app) 
 
 Fastify serves Swagger-UI at `/docs`
 
----
-
 ## Database
 We chose PostgreSQL because it gives us typed enums for the Sentiment field, full ACID guarantees, effortless local-to-cloud parity (thanks to Neon’s free tier and Docker), first-class Prisma support, and a growth path from proof-of-concept to production without changing databases.
 
@@ -33,12 +29,12 @@ Regarding the schema:
 
 | Choice                                                   | Reason                                                                                                               |
 | -------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
-| **Single `Opinions` table**                              | One write path + one read path → no joins, simpler Prisma typing, cheapest on Neon’s free tier.                      |
-| **`Sentiment` as native `ENUM`**                         | Compile-time safety; PostgreSQL stores it as an integer so equality filters & `GROUP BY` stay fast.                  |
-| **Four buckets** (`GOOD / BAD / NEUTRAL / UNDETERMINED`) | Covers polarity plus a default for rows whose NLP job hasn’t finished yet.                                           |
-| **`content VARCHAR(1000)`**                              | 1 000 chars ≈ 150–200 words—enough detail yet still under the 20 s CPU limit for wink-nlp on Cloud Run’s free share. |
-| **`SERIAL id`**                                          | Simple auto-increment key, smaller than UUID, results in clean URLs (`/admin#42`).                                   |
-| **`createdAt TIMESTAMP(3) DEFAULT now()`**               | Server timestamps the row; avoids trusting client clocks or needing a trigger.                                       |
+| **Single `Opinions` table**                              | One write path + one read path → no joins, simpler Prisma typing, cheapest on Neon’s free tier.    |
+| **`Sentiment` as native `ENUM`**                         | Compile-time safety; PostgreSQL stores it as an integer so equality filters & `GROUP BY` stay fast. |
+| **Four buckets** (`GOOD / BAD / NEUTRAL / UNDETERMINED`) | Covers polarity plus a default for rows whose NLP job hasn’t finished yet.  |
+| **`content VARCHAR(1000)`**                              | 1000 chars / 150–200 words—enough detail|
+| **`SERIAL id`**                                          | Simple auto-increment key, smaller than UUID      |
+| **`createdAt TIMESTAMP(3) DEFAULT now()`**               | Server timestamps the row;                              |
 
 ```mermaid
 erDiagram
@@ -59,12 +55,7 @@ erDiagram
   * `/`   public feedback form  
   * `/admin`   password box + “Load feedback”  
   * `/docs`   Swagger-UI
-* NGINX proxies  
-  * `/api/*` → Fastify  
-  * `/docs/*` → Fastify  
-  * everything else → SPA files
 
----
 
 ## CI (GitHub Actions)
 
