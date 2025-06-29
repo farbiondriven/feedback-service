@@ -74,3 +74,17 @@ graph TD
     Fastify -->|enqueue| Worker
     Worker -->|insert & update| DB
 ```
+
+## What’s still missing
+
+| Area | Gap today | Next step |
+|------|-----------|-----------|
+| **Integration tests (real DB)** | Jest runs entirely on mocks; we’ve never hit an actual Postgres instance in CI. | We can use the `docker-compose.yml` where we already have (Fastify + Neon-compatible Postgres) and start it in GitHub Actions (`services:`). Run the same Jest suite with `DATABASE_URL` pointing at that container so migrations and Prisma queries execute for real. |
+| **Sentiment sanity tests** | We unit-test the route but never assert that the used sentiment library assigns correct polarity. | Add a param-based test: feed known “good / bad / neutral” strings into the API, expecting the correct outcome in the response. Ensures the dictionary or preprocessing never regresses. |
+| **Infrastructure as Code** | Cloud Run + Artifact Registry are created manually via CLI. | Write Terraform that provisions the service, IAM, Neon connection string, and a Cloud Build trigger. The same code can spin up staging and prod. |
+| **UI polish** | Admin panel is minimal HTML + inline styles; public form is bare. | Use a component lib (e.g. shadcn/ui) for theming, add a “sentiment bar” in the table, real-time streaming via SSE or websockets, and field validation on the public form. |
+| **True background workers** | NLP runs in in-process threads; if the instance scales to zero, work vanishes. | Publish the job to Cloud Pub/Sub; run a separate Cloud Run Job (or Cloud Function) subscribed to the topic. Lets workers autoscale independently, keeps API stateless. |
+| **Observability** | Only console logs; no metrics, no tracing. | Add OpenTelemetry SDK to Fastify, export traces to Cloud Trace and metrics to Cloud Monitoring. Dashboards: request latency, worker queue depth, sentiment distribution. |
+
+> **Takeaway:** the MVP proves the idea at \$0, but adding the points above turns it into a production-ready, observable, reproducible system.
+
