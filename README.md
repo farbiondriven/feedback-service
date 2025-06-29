@@ -3,9 +3,10 @@ A TypeScript REST micro-service that accepts customer feedback, saves it to a da
 
 Deployed at:
 App:	    https://feedback-system-382890220864.europe-west1.run.app
+
 OpenAPI:	https://feedback-system-382890220864.europe-west1.run.app/docs/
 
-## 1  System overview
+## System overview
 
 | Step | What happens |
 |------|--------------|
@@ -16,7 +17,7 @@ OpenAPI:	https://feedback-system-382890220864.europe-west1.run.app/docs/
 
 ---
 
-## 2  Backend stack
+## Backend stack
 
 | Concern | Library | Rationale |
 |---------|---------|-----------|
@@ -28,9 +29,9 @@ Fastify serves Swagger-UI at `/docs`
 
 ---
 
-## 3  Frontend stack
+## Frontend stack
 
-* **Vite + React (SPA)** – built bundle lives under `/usr/share/nginx/html`.
+* **Vite + React (Single Page application)** – built bundle lives under `/usr/share/nginx/html`.
 * Pages  
   * `/`   public feedback form  
   * `/admin`   password box + “Load feedback”  
@@ -42,11 +43,11 @@ Fastify serves Swagger-UI at `/docs`
 
 ---
 
-## 4  CI (GitHub Actions)
+## CI (GitHub Actions)
 
 For every Pull request CI runs on github actions to make sure changes won't break existing functionality or standards.
 
-## Feedback-Sentiment Demo
+## Demo deployment
 
 One-container proof-of-concept that lets anyone post feedback, classifies
 its sentiment in the background, stores everything in Postgres and lets an
@@ -64,8 +65,8 @@ graph TD
     Browser((Browser))
     DB[(Neon Postgres)]
 
-    Browser -->|/ (SPA)| NGINX
-    Browser -->|/admin (SPA)| NGINX
+    Browser -->|Frontend| NGINX
+    Browser -->|/admin Frontend| NGINX
     Browser -->|/docs/*| NGINX
     Browser -->|/api/*| NGINX
 
