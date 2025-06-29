@@ -41,7 +41,7 @@ const feedbackRoutes: FastifyPluginAsync = async (app) => {
         });
       }
       try {
-        const record = await prisma.text.create({ data: { content } });
+        const record = await prisma.opinions.create({ data: { content } });
         enqueueSentiment(record.id, content);
         return reply.send({ id: record.id });
       } catch (err) {
@@ -82,7 +82,7 @@ const feedbackRoutes: FastifyPluginAsync = async (app) => {
     },
     async (req, reply) => {
       try {
-        const raw = await prisma.text.findMany({
+        const raw = await prisma.opinions.findMany({
           orderBy: { createdAt: 'desc' },
         });
         const list: FeedbackList = raw.map((r) => ({

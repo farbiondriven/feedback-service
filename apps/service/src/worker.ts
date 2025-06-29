@@ -30,7 +30,7 @@ const nlp = winkNLP(model);
           : Sentiment.NEUTRAL;
 
     // update the record
-    await prisma.text.update({
+    await prisma.opinions.update({
       where: { id },
       data: { sentiment: bucket },
     });
