@@ -1,9 +1,8 @@
-// apps/worker/src/worker.ts
-//--------------------------------------------------
 import { parentPort, workerData } from 'worker_threads';
 import winkNLP from 'wink-nlp';
 import model from 'wink-eng-lite-web-model';
 import { PrismaClient, Sentiment } from '@prisma/client';
+import { performance } from 'node:perf_hooks';
 
 interface JobData {
   id: number;
@@ -14,9 +13,10 @@ const prisma = new PrismaClient();
 const nlp = winkNLP(model);
 
 (async () => {
+  const t0 = performance.now();
   try {
     const { id, content } = workerData as JobData;
-    console.info(`Worker thread ${id} - ${content}`);
+    console.info(`Worker thread ${id}`);
     // build a document and get its sentiment score
     const doc = nlp.readDoc(content);
     const score = doc.out(nlp.its.sentiment) as number;
@@ -30,7 +30,7 @@ const nlp = winkNLP(model);
           : Sentiment.NEUTRAL;
 
     // update the record
-    await prisma.text.update({
+    await prisma.opinions.update({
       where: { id },
       data: { sentiment: bucket },
     });
@@ -44,6 +44,8 @@ const nlp = winkNLP(model);
     });
   } finally {
     await prisma.$disconnect();
+    const ms = performance.now() - t0;
+    console.info(`Sentiment Worker took ${ms.toFixed(1)} ms`);
     process.exit();
   }
 })();

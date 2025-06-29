@@ -1,4 +1,3 @@
-// apps/frontend/src/App.tsx
 import React, { useState, useEffect } from 'react';
 import FeedbackForm from './components/FeedbackForm';
 import AdminPanel from './components/AdminPanel';

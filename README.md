@@ -1,21 +1,16 @@
 # feedback-service
 A TypeScript REST micro-service that accepts customer feedback, saves it to a database, and asynchronously classifies each comment as Good, Neutral, or Bad.
 
-Deployed at:
-App:	    https://feedback-system-382890220864.europe-west1.run.app
-
-OpenAPI:	https://feedback-system-382890220864.europe-west1.run.app/docs/
+A small [PoC client](https://feedback-system-382890220864.europe-west1.run.app) + [OpenAPI page](https://feedback-system-382890220864.europe-west1.run.app/docs/) have been deployed to google cloud.
 
 ## System overview
 
 | Step | What happens |
 |------|--------------|
-| **1. Public POST** → **`/api/feedback`** | Any user submits a plain-text string. |
-| **2. Async sentiment** | A worker thread classifies the text using _NLP_ (0-20 s for very long passages) so the HTTP response is instant. |
+| **1. Public POST** **`/api/feedback`** | Any user can submit a plain-text string (max 1000 characters) |
+| **2. Async sentiment** | A worker thread classifies the text using _NLP_ (which can take 0-10 s for very long passages) so the HTTP response is instant. |
 | **3. Persist** | Text, sentiment and timestamp saved via Prisma into Neon Postgres. |
 | **4. Admin view** | A password protected page for administrators showing every submission saved |
-
----
 
 ## Backend stack
 
@@ -27,6 +22,30 @@ OpenAPI:	https://feedback-system-382890220864.europe-west1.run.app/docs/
 
 Fastify serves Swagger-UI at `/docs`
 
+## Database
+We chose PostgreSQL because it gives us typed enums for the Sentiment field, full ACID guarantees, effortless local-to-cloud parity (thanks to Neon’s free tier and Docker), first-class Prisma support, and a growth path from proof-of-concept to production without changing databases.
+
+Regarding the schema:
+
+| Choice                                                   | Reason                                                                                                               |
+| -------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| **Single `Opinions` table**                              | One write path + one read path → no joins, simpler Prisma typing, cheapest on Neon’s free tier.    |
+| **`Sentiment` as native `ENUM`**                         | Compile-time safety; PostgreSQL stores it as an integer so equality filters & `GROUP BY` stay fast. |
+| **Four buckets** (`GOOD / BAD / NEUTRAL / UNDETERMINED`) | Covers polarity plus a default for rows whose NLP job hasn’t finished yet.  |
+| **`content VARCHAR(1000)`**                              | 1000 chars / 150–200 words—enough detail|
+| **`SERIAL id`**                                          | Simple auto-increment key, smaller than UUID      |
+| **`createdAt TIMESTAMP(3) DEFAULT now()`**               | Server timestamps the row;                              |
+
+```mermaid
+erDiagram
+    OPINIONS {
+        SERIAL          id PK "Primary key"
+        VARCHAR(1000)   content  "Feedback text (1–1000 chars)"
+        Sentiment       sentiment "GOOD · NEUTRAL · BAD · UNDETERMINED"
+        TIMESTAMP(3)    createdAt "Defaults to CURRENT_TIMESTAMP"
+    }
+```
+
 ---
 
 ## Frontend stack
@@ -36,12 +55,7 @@ Fastify serves Swagger-UI at `/docs`
   * `/`   public feedback form  
   * `/admin`   password box + “Load feedback”  
   * `/docs`   Swagger-UI
-* NGINX proxies  
-  * `/api/*` → Fastify  
-  * `/docs/*` → Fastify  
-  * everything else → SPA files
 
----
 
 ## CI (GitHub Actions)
 

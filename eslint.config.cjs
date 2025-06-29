@@ -1,4 +1,3 @@
-// eslint.config.cjs
 const { FlatCompat } = require("@eslint/eslintrc");
 const js = require("@eslint/js");
 const tsParser = require("@typescript-eslint/parser");
@@ -12,23 +11,17 @@ const compat = new FlatCompat({
 });
 
 module.exports = [
-  // 1) Ignore all JS files and build output
   {
     ignores: ["**/*.js", "**/*.cjs", "dist/**", "apps/**/dist/**", 'apps/service/__tests__/**', "apps/frontend/vite.config.ts"],
   },
-
-  // 2) Pull in the old "extends": presets
   ...compat.extends(
     "eslint:recommended",
     "plugin:@typescript-eslint/recommended",
     "plugin:prettier/recommended",
   ),
-
-  // 3) TypeScript‐only overrides
   {
     files: ["**/*.ts", "**/*.tsx"],
 
-    // **Here** we pass in the actual parser object, not a string
     languageOptions: {
       parser: tsParser,
       parserOptions: {
@@ -44,9 +37,7 @@ module.exports = [
       prettier: prettierPlugin,
     },
 
-    // our Prettier rule to surface formatting errors
     rules: {
-      // disable the “no-explicit-any” rule entirely:
       '@typescript-eslint/no-explicit-any': 'off',
     },
   },

@@ -1,4 +1,3 @@
-// apps/frontend/src/components/AdminPanel.tsx
 import React, { useState } from 'react';
 import { fetchFeedbacks, FeedbackRecord } from '../api';
 

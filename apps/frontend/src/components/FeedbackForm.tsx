@@ -1,4 +1,3 @@
-// apps/frontend/src/components/FeedbackForm.tsx
 import React, { useState } from 'react';
 import { submitFeedback } from '../api';
 

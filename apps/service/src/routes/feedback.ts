@@ -1,5 +1,3 @@
-// apps/api/src/routes/feedback.ts
-//--------------------------------------------------
 import { FastifyPluginAsync } from 'fastify';
 import prisma from '../db';
 import { enqueueSentiment } from '../queue';
@@ -15,7 +13,6 @@ import {
 } from '../schemas/feedback';
 
 const feedbackRoutes: FastifyPluginAsync = async (app) => {
-  // ─── POST /feedback ──────────────────────────────────────────────────────
   app.post<{
     Body: FeedbackBody;
     Reply: FeedbackAccepted | ErrorResponse;
@@ -41,7 +38,7 @@ const feedbackRoutes: FastifyPluginAsync = async (app) => {
         });
       }
       try {
-        const record = await prisma.text.create({ data: { content } });
+        const record = await prisma.opinions.create({ data: { content } });
         enqueueSentiment(record.id, content);
         return reply.send({ id: record.id });
       } catch (err) {
@@ -55,7 +52,6 @@ const feedbackRoutes: FastifyPluginAsync = async (app) => {
     },
   );
 
-  // ─── GET /admin/feedback ─────────────────────────────────────────────────
   app.get(
     '/admin/feedback',
     {
@@ -82,7 +78,7 @@ const feedbackRoutes: FastifyPluginAsync = async (app) => {
     },
     async (req, reply) => {
       try {
-        const raw = await prisma.text.findMany({
+        const raw = await prisma.opinions.findMany({
           orderBy: { createdAt: 'desc' },
         });
         const list: FeedbackList = raw.map((r) => ({
