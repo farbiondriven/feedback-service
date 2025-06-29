@@ -2,24 +2,27 @@
   "name": "feedback-service",
   "version": "0.1.0",
   "private": true,
-  "workspaces": ["apps/service", "apps/frontend"],
+  "workspaces": [
+    "apps/service",
+    "apps/frontend"
+  ],
   "scripts": {
-    "build":          "npm run --workspaces build",
-    "lint":           "eslint .",
-    "lint:fix":       "eslint . --fix",
-    "format":         "prettier --write \"apps/**/*.{ts,js,tsx,css,json,md}\"",
-    "format:check":   "prettier --check \"apps/**/*.{ts,js,tsx,css,md,json}\"",
-    "test":           "npm run test --workspace=apps/service"
+    "build": "npm run --workspaces build",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write \"apps/**/*.{ts,js,tsx,css,json,md}\"",
+    "format:check": "prettier --check \"apps/**/*.{ts,js,tsx,css,md,json}\"",
+    "test": "npm run test --workspace=apps/service"
   },
   "devDependencies": {
+    "@eslint/js": "^9.29.0",
     "@types/node": "^20.11.0",
-    "prettier":                "^3.6.1",
-    "eslint-plugin-prettier":  "^5.5.1",
-    "eslint-config-prettier":  "^10.1.5",
     "@typescript-eslint/eslint-plugin": "^8.34.1",
     "@typescript-eslint/parser": "^8.34.1",
     "eslint": "^9.29.0",
-    "@eslint/js": "^9.29.0",
+    "eslint-config-prettier": "^10.1.5",
+    "eslint-plugin-prettier": "^5.5.1",
+    "prettier": "^3.6.1",
     "prisma": "^6.10.1",
     "tsx": "^4.7.0",
     "typescript": "^5.5.0",

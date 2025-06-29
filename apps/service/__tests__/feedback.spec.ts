@@ -23,13 +23,13 @@ describe('Feedback API', () => {
     });
 
     it('🏷️  returns 200 and enqueues sentiment for valid content', async () => {
-      prismaMock.text.create.mockResolvedValue({
+      prismaMock.opinions.create.mockResolvedValue({
         id: 42,
         content: 'Looks great!',
         sentiment: 'UNDETERMINED',
         createdAt: new Date(),
       });
-      prismaMock.text.update.mockResolvedValue({
+      prismaMock.opinions.update.mockResolvedValue({
         id: 42,
         content: 'Looks great!',
         sentiment: 'GOOD',
@@ -44,7 +44,7 @@ describe('Feedback API', () => {
 
       expect(res.statusCode).toBe(200);
       expect(res.json()).toEqual({ id: 42 });
-      expect(prismaMock.text.create).toHaveBeenCalledWith({
+      expect(prismaMock.opinions.create).toHaveBeenCalledWith({
         data: { content: 'Looks great!' },
       });
     });
@@ -62,7 +62,7 @@ describe('Feedback API', () => {
       expect(body).toHaveProperty('statusCode', 400);
       expect(body).toHaveProperty('error', 'Bad Request');
       // DB and queue should never be called
-      expect(prismaMock.text.create).not.toHaveBeenCalled();
+      expect(prismaMock.opinions.create).not.toHaveBeenCalled();
     });
   });
 
@@ -74,7 +74,7 @@ describe('Feedback API', () => {
     });
 
     beforeEach(() => {
-      prismaMock.text.findMany.mockResolvedValue([
+      prismaMock.opinions.findMany.mockResolvedValue([
         {
           id: 1,
           content: 'Test content',
@@ -108,7 +108,7 @@ describe('Feedback API', () => {
         sentiment: 'NEUTRAL',
         createdAt: '2025-06-30T12:00:00.000Z',
       });
-      expect(prismaMock.text.findMany).toHaveBeenCalled();
+      expect(prismaMock.opinions.findMany).toHaveBeenCalled();
     });
   });
 });
