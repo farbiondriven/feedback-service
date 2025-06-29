@@ -1,15 +1,19 @@
 import { PrismaClient } from '@prisma/client';
-import { mockDeep, mockReset, DeepMockProxy } from 'jest-mock-extended';
+import { mockDeep, mockReset } from 'jest-mock-extended';
 
-import prisma from './db';
+const prismaMock = mockDeep<PrismaClient>();
 
-jest.mock('./db', () => ({
-  __esModule: true,
-  default: mockDeep<PrismaClient>(),
-}));
+jest.mock('./db', () => {
+  // pull the *real* module so we can forward its named exports
+  const actual = jest.requireActual<typeof import('./db')>('./db');
 
-beforeEach(() => {
-  mockReset(prismaMock);
+  return {
+    __esModule: true,
+    ...actual, // Sentiment (and any other enums) stay intact
+    default: prismaMock, // but *default* becomes the deep mock
+  };
 });
 
-export const prismaMock = prisma as unknown as DeepMockProxy<PrismaClient>;
+beforeEach(() => mockReset(prismaMock));
+
+export { prismaMock };
