@@ -72,8 +72,6 @@ const feedbackRoutes: FastifyPluginAsync = async (app) => {
           '',
         );
         if (token !== process.env.ADMIN_TOKEN) {
-          app.log.info('Checking token');
-          app.log.info(token);
           return reply.code(401).send({
             statusCode: 401,
             error: 'Unauthorized',
@@ -84,7 +82,6 @@ const feedbackRoutes: FastifyPluginAsync = async (app) => {
     },
     async (req, reply) => {
       try {
-        app.log.info('BEFORE DB CALL');
         const raw = await prisma.text.findMany({
           orderBy: { createdAt: 'desc' },
         });

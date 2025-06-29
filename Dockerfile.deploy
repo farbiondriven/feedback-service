@@ -1,0 +1,58 @@
+###############################################################
+# 1)  FRONTEND BUILD – Vite /dist                           #
+###############################################################
+FROM node:20-slim AS frontend-build
+WORKDIR /workspace
+COPY package.json package-lock.json ./
+COPY apps/frontend/package.json apps/frontend/
+RUN npm ci --workspaces --include-workspace-root
+COPY apps/frontend apps/frontend
+ARG API_BASE_URL=/api
+ENV API_BASE_URL=$API_BASE_URL
+RUN npm run --workspace=apps/frontend build
+
+###############################################################
+# 2)  BACKEND BUILD – Fastify prod deps only                  #
+###############################################################
+FROM node:20-slim AS service-build
+WORKDIR /workspace/apps/service
+
+# 1.1 Copy service manifest & tsconfig
+COPY apps/service/package.json     apps/service/tsconfig.json ./
+
+# 1.2 Install all deps (prod + dev)
+RUN npm install
+
+COPY apps/service/prisma/schema.prisma ./prisma/schema.prisma
+RUN npx prisma generate --schema=./prisma/schema.prisma
+
+# 1.4 Copy & build TypeScript
+COPY apps/service/src ./src
+RUN npm run build
+
+# 1.5 Prune devDependencies for a lean runtime
+RUN npm prune --production
+
+
+###############################################################
+# 3)  RUNTIME – Node + Nginx, 0 shells after start            #
+###############################################################
+FROM node:20-slim
+WORKDIR /app
+
+COPY --from=service-build /workspace/apps/service .
+
+RUN apt-get update && apt-get install -y nginx \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN rm -rf /usr/share/nginx/html/*
+COPY --from=frontend-build /workspace/apps/frontend/dist/. /usr/share/nginx/html
+COPY deploy/nginx.conf /etc/nginx/conf.d/default.conf
+
+# ---------- Entrypoint ----------
+COPY deploy/start.sh /start.sh
+RUN chmod +x /start.sh
+
+ENV NODE_ENV=production
+EXPOSE 8080
+CMD ["/start.sh"]

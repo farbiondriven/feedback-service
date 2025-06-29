@@ -10,14 +10,17 @@ export interface SentimentJobData {
   id: number;
   content: string;
 }
+const isProduction = process.env.NODE_ENV === 'production';
+const isTest = process.env.JEST_WORKER_ID !== undefined;
 
 export function enqueueSentiment(id: number, content: string): void {
-  // __dirname at runtime === /app/dist
-  //const workerFile = path.join(__dirname, "worker.js");
-  const workerFile = path.join(__dirname, 'worker.ts');
+  const workerFile = isProduction
+    ? path.join(__dirname, 'worker.js') // built JS inside the image
+    : path.join(__dirname, 'worker.ts');
 
   const worker = new Worker(workerFile, {
     workerData: { id, content },
+    execArgv: isTest ? ['-r', 'ts-node/register'] : [],
   });
 
   worker.once('error', (err) =>
