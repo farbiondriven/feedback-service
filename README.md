@@ -29,6 +29,32 @@ Fastify serves Swagger-UI at `/docs`
 
 ---
 
+## Database
+We chose PostgreSQL because it gives us typed enums for the Sentiment field, full ACID guarantees, effortless local-to-cloud parity (thanks to Neon’s free tier and Docker), first-class Prisma support, and a growth path from proof-of-concept to production without changing databases.
+
+Regarding the schema:
+
+| Choice                                                   | Reason                                                                                                               |
+| -------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| **Single `Opinions` table**                              | One write path + one read path → no joins, simpler Prisma typing, cheapest on Neon’s free tier.                      |
+| **`Sentiment` as native `ENUM`**                         | Compile-time safety; PostgreSQL stores it as an integer so equality filters & `GROUP BY` stay fast.                  |
+| **Four buckets** (`GOOD / BAD / NEUTRAL / UNDETERMINED`) | Covers polarity plus a default for rows whose NLP job hasn’t finished yet.                                           |
+| **`content VARCHAR(1000)`**                              | 1 000 chars ≈ 150–200 words—enough detail yet still under the 20 s CPU limit for wink-nlp on Cloud Run’s free share. |
+| **`SERIAL id`**                                          | Simple auto-increment key, smaller than UUID, results in clean URLs (`/admin#42`).                                   |
+| **`createdAt TIMESTAMP(3) DEFAULT now()`**               | Server timestamps the row; avoids trusting client clocks or needing a trigger.                                       |
+
+```mermaid
+erDiagram
+    OPINIONS {
+        SERIAL          id PK "Primary key"
+        VARCHAR(1000)   content  "Feedback text (1–1000 chars)"
+        Sentiment       sentiment "GOOD · NEUTRAL · BAD · UNDETERMINED"
+        TIMESTAMP(3)    createdAt "Defaults to CURRENT_TIMESTAMP"
+    }
+```
+
+---
+
 ## Frontend stack
 
 * **Vite + React (Single Page application)** – built bundle lives under `/usr/share/nginx/html`.
