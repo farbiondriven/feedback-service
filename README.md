@@ -1,17 +1,14 @@
 # feedback-service
 A TypeScript REST micro-service that accepts customer feedback, saves it to a database, and asynchronously classifies each comment as Good, Neutral, or Bad.
 
-Deployed at:
-App:	    https://feedback-system-382890220864.europe-west1.run.app
-
-OpenAPI:	https://feedback-system-382890220864.europe-west1.run.app/docs/
+A small [PoC client](https://feedback-system-382890220864.europe-west1.run.app) + [OpenAPI page](https://feedback-system-382890220864.europe-west1.run.app/docs/) have been deployed to google cloud.
 
 ## System overview
 
 | Step | What happens |
 |------|--------------|
-| **1. Public POST** → **`/api/feedback`** | Any user submits a plain-text string. |
-| **2. Async sentiment** | A worker thread classifies the text using _NLP_ (0-20 s for very long passages) so the HTTP response is instant. |
+| **1. Public POST** **`/api/feedback`** | Any user can submit a plain-text string (max 1000 characters) |
+| **2. Async sentiment** | A worker thread classifies the text using _NLP_ (which can take 0-10 s for very long passages) so the HTTP response is instant. |
 | **3. Persist** | Text, sentiment and timestamp saved via Prisma into Neon Postgres. |
 | **4. Admin view** | A password protected page for administrators showing every submission saved |
 
