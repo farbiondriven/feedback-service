@@ -17,10 +17,10 @@ services:
       - "5430:5432"
 
   migrate:
-    image: node:20-slim                     # use Debian-slim instead of Alpine
+    image: pionl/node-with-openssl:latest
     working_dir: /app
     volumes:
-      - ./:/app
+      - ./apps/service/:/app
     command:
       [
         "npx","prisma","migrate","deploy",
@@ -31,30 +31,19 @@ services:
     depends_on:
       db:
         condition: service_healthy
-  backend:
+  service:
     build:
-      context: ./apps/service
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: Dockerfile.deploy
     depends_on:
-      migrate:
-        condition: service_completed_successfully
       db:
         condition: service_healthy
     environment:
       DATABASE_URL: postgres://api:api@db:5432/api
       ADMIN_TOKEN: fab
-      PORT: "3000"
+      PORT: "9000"
     ports:
-      - "3001:3000"
-
-  frontend:
-    build:
-      context: ./apps/frontend
-      dockerfile: Dockerfile
-    ports:
-      - "5173:80"
-    depends_on:
-      - backend
+      - "3000:8080"
 
 volumes:
   dbdata:
