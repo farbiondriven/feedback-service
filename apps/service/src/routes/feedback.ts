@@ -1,5 +1,3 @@
-// apps/api/src/routes/feedback.ts
-//--------------------------------------------------
 import { FastifyPluginAsync } from 'fastify';
 import prisma from '../db';
 import { enqueueSentiment } from '../queue';
@@ -15,7 +13,6 @@ import {
 } from '../schemas/feedback';
 
 const feedbackRoutes: FastifyPluginAsync = async (app) => {
-  // ─── POST /feedback ──────────────────────────────────────────────────────
   app.post<{
     Body: FeedbackBody;
     Reply: FeedbackAccepted | ErrorResponse;
@@ -55,7 +52,6 @@ const feedbackRoutes: FastifyPluginAsync = async (app) => {
     },
   );
 
-  // ─── GET /admin/feedback ─────────────────────────────────────────────────
   app.get(
     '/admin/feedback',
     {

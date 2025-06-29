@@ -15,7 +15,7 @@ const isTest = process.env.JEST_WORKER_ID !== undefined;
 
 export function enqueueSentiment(id: number, content: string): void {
   const workerFile = isProduction
-    ? path.join(__dirname, 'worker.js') // built JS inside the image
+    ? path.join(__dirname, 'worker.js')
     : path.join(__dirname, 'worker.ts');
 
   const worker = new Worker(workerFile, {

@@ -13,7 +13,6 @@ export const SentimentSchema = {
 
 export type SentimentType = Sentiment;
 
-/** POST /feedback  request */
 export interface FeedbackBody {
   content: string;
 }
@@ -38,7 +37,6 @@ export const FeedbackAcceptedSchema = {
   additionalProperties: false as const,
 };
 
-/** Single record returned by GET /admin/feedback */
 export interface FeedbackItem {
   id: number;
   content: string;
