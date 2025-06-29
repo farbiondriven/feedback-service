@@ -11,6 +11,7 @@ export interface SentimentJobData {
   content: string;
 }
 const isProduction = process.env.NODE_ENV === 'production';
+const isTest = process.env.JEST_WORKER_ID !== undefined;
 
 export function enqueueSentiment(id: number, content: string): void {
   const workerFile = isProduction
@@ -19,6 +20,7 @@ export function enqueueSentiment(id: number, content: string): void {
 
   const worker = new Worker(workerFile, {
     workerData: { id, content },
+    execArgv: isTest ? ['-r', 'ts-node/register'] : [],
   });
 
   worker.once('error', (err) =>
