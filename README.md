@@ -66,14 +66,14 @@ graph TD
     DB[(Neon Postgres)]
 
     Browser -->|Frontend| NGINX
-    Browser -->|/admin Frontend| NGINX
     Browser -->|/docs/*| NGINX
     Browser -->|/api/*| NGINX
 
     NGINX -->|proxy /docs/*| Fastify
     NGINX -->|proxy /api/*| Fastify
+    Fastify -->|insert| DB
     Fastify -->|enqueue| Worker
-    Worker -->|insert & update| DB
+    Worker -->|update| DB
 ```
 
 ## What’s still missing
